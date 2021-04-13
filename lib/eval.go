@@ -9,6 +9,7 @@ import (
 	"github.com/google/cel-go/checker/decls"
 	"github.com/google/cel-go/common/types"
 	"github.com/google/cel-go/common/types/ref"
+	"github.com/google/cel-go/common/types/traits"
 	"github.com/google/cel-go/interpreter/functions"
 	exprpb "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
@@ -37,12 +38,14 @@ func NewEnv(c *CustomLib) (*cel.Env, error) {
 // NewEnvOption 声明cel变量声明
 func NewEnvOption() CustomLib {
 	c := CustomLib{}
+	mapParam := decls.NewMapType(decls.String, decls.String)
 	c.envOptions = []cel.EnvOption{
 		cel.Container("lib"),
 		cel.Types(&Response{}),
-		cel.Declarations(decls.NewIdent("response", decls.NewObjectType("lib.Response"), nil)),
+		cel.Declarations(decls.NewVar("response", decls.NewObjectType("lib.Response"))),
 		cel.Declarations(decls.NewFunction("bcontains", decls.NewInstanceOverload("bytes_bcontains_bytes", []*exprpb.Type{decls.Bytes, decls.Bytes}, decls.Bool))),
 		cel.Declarations(decls.NewFunction("contains_string", decls.NewInstanceOverload("strings_contails_strings", []*exprpb.Type{decls.String, decls.String}, decls.Bool))),
+		cel.Declarations(decls.NewFunction("contains_key", decls.NewInstanceOverload("map_contains_key", []*exprpb.Type{mapParam, decls.String}, decls.Bool))),
 	}
 	c.programOptions = []cel.ProgramOption{
 		cel.Functions(
@@ -54,9 +57,27 @@ func NewEnvOption() CustomLib {
 				Operator: "strings_contails_strings",
 				Binary:   stringsContainsStrings,
 			},
+			&functions.Overload{
+				Operator: "map_contains_key",
+				Binary:   mapContainsKey,
+			},
 		),
 	}
 	return c
+}
+
+func mapContainsKey(lhs ref.Val, rhs ref.Val) ref.Val {
+	v1, ok := lhs.(traits.Mapper)
+	if !ok {
+		return types.ValOrErr(lhs, "unexpected type '%v' passed to bcontains", lhs.Type())
+	}
+
+	v2, ok := rhs.(types.String)
+	if !ok {
+		return types.ValOrErr(rhs, "unexpected type '%v' passed to bcontains", rhs.Type())
+	}
+	_, found := v1.Find(v2)
+	return types.Bool(found)
 }
 
 func stringsContainsStrings(lhs ref.Val, rhs ref.Val) ref.Val {
@@ -87,7 +108,7 @@ func bytesContainsBytes(lhs ref.Val, rhs ref.Val) ref.Val {
 func Evaluate(env *cel.Env, expression string, params map[string]interface{}) (ref.Val, error) {
 	ast, iss := env.Compile(expression)
 	if iss.Err() != nil {
-		fmt.Errorf("compile: ", iss.Err())
+		fmt.Errorf("compile: %v", iss.Err())
 		return nil, iss.Err()
 	}
 

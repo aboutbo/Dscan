@@ -27,8 +27,5 @@ func ReadFromFile(filename string) []string {
 // CheckTargetAlive 检查目标是否存活
 func CheckTargetAlive(url string) bool {
 	_, err := RequestURL(url)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }

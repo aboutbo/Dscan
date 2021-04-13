@@ -115,14 +115,14 @@ rules:
     description: file
     path: /test.zip
     expression: response.headers['Content-Type'].contains('application/zip') && (response.status_code == 200 || response.status_code == 206)
-  # rule30:
-  #   description: kong api gateway
-  #   path: /status
-  #   expression: response.headers['Content-Type'].contains('application/json') && (response.headers['x-kong-admin-latency'] || response.headers['Server'].contains('kong'))
-  # rule31:
-  #   description: kong api gateway
-  #   path: /services
-  #   expression: response.headers['Content-Type'].contains('application/json') && (response.headers['x-kong-admin-latency'] || response.headers['Server'].contains('kong'))
+  rule30:
+    description: kong api gateway
+    path: /status
+    expression: response.headers['Content-Type'].contains('application/json') && (response.headers.contains_key('x-kong-admin-latency') || response.headers['Server'].contains('kong'))
+  rule31:
+    description: kong api gateway
+    path: /services
+    expression: response.headers['Content-Type'].contains('application/json') && (response.headers.contains_key('x-kong-admin-latency') || response.headers['Server'].contains('kong'))
   rule32:
     description: swagger-ui
     path: /docs
