@@ -1,0 +1,133 @@
+rules:
+  rule1:
+    description: swagger-ui
+    path: /swagger-ui.html
+    expression: response.status_code == 200 && response.body.bcontains(b'springfox-swagger-ui')
+  rule2:
+    description: Marathon rce
+    path: /ui
+    expression: response.status_code == 200 && response.body.bcontains(b'<title>Marathon</title>')
+  rule3:
+    description: coremail
+    path: /mailsms/s?func=ADMIN:appState&dumpConfig=/
+    expression: response.status_code == 200 && response.body.bcontains(b'coremail')
+  rule4:
+    description: coremail(weakpass coremail/coremail)
+    path: /lunkr/cache/;/;/../../manager/html
+    expression: response.status_code == 401
+  rule5:
+    description: kibana
+    path: /app/kibana
+    expression: response.status_code == 200 && response.body.bcontains(b'kibanaWelcomeLogo')
+  rule6: 
+    description: swagger-ui
+    path: /v2/api-docs
+    expression: response.status_code == 200 && response.body.bcontains(b'swagger') && response.headers['Content-Type'].contains('application/json')
+  rule7:
+    description: alibaba druid
+    path: /druid/index.html
+    expression: response.status_code == 200 && response.body.bcontains(b'Druid')
+  rule8:
+    description: phpinfo
+    path: /phpinfo.php
+    expression: response.status_code == 200  && response.body.bcontains(b'PHP License')
+  rule9:
+    description: directory traversal
+    path: /?../../../../../../../../../etc/hosts
+    expression: response.status_code == 200  && response.body.bcontains(b'root:x')
+  rule10:
+    description: laravel debug
+    path: /laravel/.env
+    expression: response.status_code == 200  && response.body.bcontains(b'DB_HOST')
+  rule11:
+    description: consul api
+    path: /v1/agent/self
+    expression: response.status_code == 200  && response.body.bcontains(b'RemoteExec') && response.headers['Content-Type'].contains('application/json')
+  rule12:
+    description: xxl job
+    path: /toLogin
+    expression: response.status_code == 200  && response.body.bcontains(b'XXL')
+  rule13:
+    description: xxl job
+    path: /xxl/toLogin
+    expression: response.status_code == 200  && response.body.bcontains(b'XXL')
+  rule14:
+    description: xxl job
+    path: /xxljob/toLogin
+    expression: response.status_code == 200  && response.body.bcontains(b'XXL')
+  rule15:
+    description: xxl job
+    path: /xxl-job-admin/toLogin
+    expression: response.status_code == 200  && response.body.bcontains(b'XXL')
+  rule16:
+    description: actuator
+    path: /actuator
+    expression: response.status_code == 200  && response.headers['Content-Type'].contains('application/vnd')
+  rule17:
+    description: actuator
+    path: /actuatorAdmin
+    expression: response.status_code == 200  && response.headers['Content-Type'].contains('application/vnd')
+  rule18:
+    description: actuator
+    path: /env
+    expression: response.status_code == 200  && response.headers['Content-Type'].contains('application/vnd')
+  rule19:
+    description: actuator
+    path: /appenv
+    expression: response.status_code == 200  && response.headers['Content-Type'].contains('application/vnd')
+  rule20:
+    description: actuator
+    path: /actuatorAdmin
+    expression: response.status_code == 200  && response.headers['Content-Type'].contains('application/vnd')
+  rule21:
+    description: swagger-ui
+    path: /api/swagger-ui.html
+    expression: response.status_code == 200 && response.body.bcontains(b'springfox-swagger-ui')
+  rule22:
+    description: actuator
+    path: /httptrace
+    expression: response.status_code == 200  && response.headers['Content-Type'].contains('application/vnd')
+  rule23:
+    description: actuator
+    path: /trace
+    expression: response.status_code == 200  && response.headers['Content-Type'].contains('application/vnd')
+  rule24:
+    description: actuator
+    path: /management/env
+    expression: response.status_code == 200  && response.headers['Content-Type'].contains('application/vnd')
+  rule25:
+    description: svn
+    path: /.svn/entries
+    expression: response.status_code == 200 && response.body.bcontains(b'-props')
+  rule26:
+    description: git
+    path: /.git/config
+    expression: response.status_code == 200 && response.body.bcontains(b'[core]')
+  rule27:
+    description: git
+    path: /.git/index
+    expression: response.status_code == 200 && response.body.bcontains(b'DIRC')
+  rule28:
+    description: git
+    path: /.git/HEAD
+    expression: response.status_code == 200 && response.body.bcontains(b'refs/heads/')
+  rule29:
+    description: file
+    path: /test.zip
+    expression: response.headers['Content-Type'].contains('application/zip') && (response.status_code == 200 || response.status_code == 206)
+  # rule30:
+  #   description: kong api gateway
+  #   path: /status
+  #   expression: response.headers['Content-Type'].contains('application/json') && (response.headers['x-kong-admin-latency'] || response.headers['Server'].contains('kong'))
+  # rule31:
+  #   description: kong api gateway
+  #   path: /services
+  #   expression: response.headers['Content-Type'].contains('application/json') && (response.headers['x-kong-admin-latency'] || response.headers['Server'].contains('kong'))
+  rule32:
+    description: swagger-ui
+    path: /docs
+    expression: response.status_code == 200 && response.body.bcontains(b'Swagger UI')
+  rule33:
+    description: django file
+    path: /manage.py
+    expression: response.status_code == 200 && response.body.bcontains(b'DJANGO_SETTINGS_MODULE')

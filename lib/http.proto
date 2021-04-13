@@ -1,0 +1,9 @@
+syntax = "proto3";
+package lib;
+
+message Response {
+    int32 status_code=1;
+    map<string, string> headers=2;
+    string content_type=3;
+    bytes body=4;
+}
